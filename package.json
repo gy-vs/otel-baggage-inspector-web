@@ -1,0 +1,15 @@
+{
+  "name": "baggage-propagation-workbench",
+  "version": "1.0.0",
+  "description": "OpenTelemetry / W3C baggage propagation inspection workbench",
+  "type": "module",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "test": "node --test test/"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT"
+}

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Baggage 传播检查工作台</title>
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">🧳 Baggage 传播检查工作台 <span class="sub">W3C baggage + trace-context</span></div>
+  <div class="revinfo" id="revInfo"></div>
+  <div class="actions">
+    <button id="btnDemo" title="载入并运行内置示例">载入示例</button>
+    <button id="btnRun" class="primary" title="用当前编辑器中的配置与输入模拟 (Ctrl+Enter)">▶ 运行模拟</button>
+    <button id="btnSave" title="基于 expectedRevision 保存新 revision">保存新 revision</button>
+    <button id="btnExport" title="导出经脱敏的运行记录（不含任何 baggage 值）">导出脱敏记录</button>
+  </div>
+</header>
+
+<main class="layout">
+  <section class="panel left">
+    <div class="tabs">
+      <button class="tab active" data-tab="input">运行输入</button>
+      <button class="tab" data-tab="config">调用图配置 (JSON)</button>
+      <button class="tab" data-tab="runs">运行历史</button>
+    </div>
+
+    <div class="tabbody" data-tab="input">
+      <label class="field">
+        <span>入口服务 startService</span>
+        <input id="inStart" type="text" value="">
+      </label>
+      <label class="field">
+        <span>baggage 请求头（每行一个 <code>baggage:</code> 字段；逗号分隔成员）</span>
+        <textarea id="inBaggage" rows="9" spellcheck="false"></textarea>
+      </label>
+      <label class="field">
+        <span>traceparent</span>
+        <input id="inTraceparent" type="text" spellcheck="false">
+      </label>
+      <label class="field">
+        <span>tracestate</span>
+        <input id="inTracestate" type="text" spellcheck="false">
+      </label>
+      <label class="field">
+        <span>多入口 roots（可选 JSON 数组；用于在一次运行里制造跨 trace 合流。填写后忽略上面的单入口字段）</span>
+        <textarea id="inRoots" rows="6" spellcheck="false" placeholder='[{"service":"a","baggageHeaders":["x=1"],"traceparent":"00-...-...-01"},{"service":"b",...}]'></textarea>
+      </label>
+      <p class="hint">百分号编码原样保留；坏编码/坏 UTF-8 的成员会被解析层丢弃并给出原因。</p>
+    </div>
+
+    <div class="tabbody hidden" data-tab="config">
+      <div class="row">
+        <label>expectedRevision
+          <input id="inExpectedRev" type="number" min="0" style="width:90px">
+        </label>
+        <span class="hint" id="revHint"></span>
+      </div>
+      <textarea id="inConfig" class="code" rows="30" spellcheck="false"></textarea>
+      <p class="hint">服务可配 limits(maxTotalBytes/maxMembers/maxMemberBytes, 0=不限)、allowlist、rename、sensitiveKeys、ignoreCase、merge(isolate|union)；边可配 transform(setMembers/addMembers/deleteKeys/renameKeys/dropAll)、retries、retrySpan(reuse|new)。</p>
+    </div>
+
+    <div class="tabbody hidden" data-tab="runs">
+      <div id="runsList" class="runslist"></div>
+    </div>
+  </section>
+
+  <section class="panel center">
+    <div id="graphWrap">
+      <svg id="graph" xmlns="http://www.w3.org/2000/svg"></svg>
+    </div>
+    <div class="hopstrip-wrap">
+      <div class="strip-header">
+        <strong>逐跳审计</strong>
+        <span class="hint" id="runMeta"></span>
+      </div>
+      <div id="hopStrip" class="hopstrip"></div>
+    </div>
+  </section>
+
+  <section class="panel right">
+    <div class="tabs">
+      <button class="tab active" data-tab="hop">跳详情</button>
+      <button class="tab" data-tab="compare">两跳对比</button>
+    </div>
+
+    <div class="tabbody" data-tab="hop">
+      <div id="hopDetail"><p class="hint">选择图上的边或下方任意一跳。</p></div>
+    </div>
+    <div class="tabbody hidden" data-tab="compare">
+      <label class="field"><span>跳 A</span><select id="cmpA"></select></label>
+      <label class="field"><span>跳 B</span><select id="cmpB"></select></label>
+      <div id="cmpResult"></div>
+    </div>
+  </section>
+</main>
+
+<div id="toast" class="toast hidden"></div>
+<script src="/app.js"></script>
+</body>
+</html>
