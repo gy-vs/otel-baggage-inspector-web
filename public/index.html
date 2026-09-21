@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Baggage 传播检查工作台</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>OpenTelemetry Baggage 传播检查工作台</h1>
+    <div class="graph-picker">
+      <label>图：<select id="graphSelect"></select></label>
+      <span id="revisionBadge" class="badge"></span>
+      <button id="reloadGraphBtn" title="重新加载当前图">↻</button>
+    </div>
+  </header>
+
+  <main>
+    <section id="graphSection" class="panel">
+      <h2>① 服务调用图与配置 <span class="hint">编辑 JSON 后保存；保存携带 expectedRevision，并发编辑会收到 409 冲突</span></h2>
+      <div class="graph-layout">
+        <div>
+          <div id="graphViz" class="viz"></div>
+          <div id="graphMessage" class="message"></div>
+        </div>
+        <div class="editor">
+          <textarea id="graphJson" spellcheck="false"></textarea>
+          <div class="row">
+            <button id="saveGraphBtn">保存（新 revision）</button>
+            <button id="newGraphBtn">新建图</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="runSection" class="panel">
+      <h2>② 运行模拟 <span class="hint">运行绑定当前 revision；相同输入 + 相同配置 ⇒ 相同 runId</span></h2>
+      <div class="run-form">
+        <label>入口节点 <select id="entryNode"></select></label>
+        <label>baggage
+          <input id="inBaggage" size="60"
+                 value="user_id=42;trace=1,password=hunter2,session=abc%20def,Foo=1,foo=2,env=prod,env=staging,city=%E4%B8%AD%E6%96%87" />
+        </label>
+        <label>traceparent
+          <input id="inTraceparent" size="60"
+                 value="00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01" />
+        </label>
+        <label>tracestate <input id="inTracestate" size="30" value="vendor=abc" /></label>
+        <button id="runBtn">运行</button>
+      </div>
+      <div id="runMessage" class="message"></div>
+    </section>
+
+    <section id="hopsSection" class="panel">
+      <h2>③ 逐跳结果 <span class="hint">保留 / 覆盖 / 丢弃及原因；分叉路径相互隔离，合流不合并 header</span></h2>
+      <div id="runMeta"></div>
+      <div id="joinInfo"></div>
+      <div id="hopList"></div>
+    </section>
+
+    <section id="compareSection" class="panel">
+      <h2>④ 比较任意两跳</h2>
+      <div class="row">
+        <select id="compareA"></select>
+        <span class="vs">⇄</span>
+        <select id="compareB"></select>
+        <button id="compareBtn">比较</button>
+      </div>
+      <div id="compareResult"></div>
+    </section>
+
+    <section id="exportSection" class="panel">
+      <h2>⑤ 导出 <span class="hint">导出的记录不含被删除的敏感值（记录时即已脱敏）</span></h2>
+      <div id="runList"></div>
+    </section>
+  </main>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

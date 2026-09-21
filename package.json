@@ -1,0 +1,14 @@
+{
+  "name": "baggage-workbench",
+  "version": "1.0.0",
+  "description": "OpenTelemetry baggage propagation inspection workbench",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test test/"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}
